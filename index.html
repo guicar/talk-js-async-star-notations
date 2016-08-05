@@ -147,6 +147,96 @@ console.log(generator.next()); // { value: 5, done: false }
 console.log(generator.next()); // { value: undefined, done: true }</code></pre>
         </section>
         <section>
+          <h2>Comparaison</h2>
+          <table>
+            <tr>
+              <th>Effet</th>
+              <th>Promise</th>
+              <th>Generator</th>
+            </tr>
+            <tr>
+              <td>primitive</td>
+              <td><code>new Promise</code></td>
+              <td><code>yield</code></td>
+            </tr>
+            <tr>
+              <td>séquence</td>
+              <td><code>await</code></td>
+              <td><code>yield*</code></td>
+            </tr>
+          </table>
+        </section>
+        <section>
+          <h2>Monades</h2>
+          <quote><em>Structure de données pour représenter un effet impur.</em></quote>
+          <div class="fragment">
+            <p>Séquencement :</p>
+            <pre><code>type Monad&lt;A&gt; = ...;
+bind&lt;A, B&gt;(first: Monad&lt;A&gt;, second: (result: A) =&gt; Monad&lt;B&gt;) =&gt; Monad&lt;B&gt;</code></pre>
+            <pre class="fragment"><code>.then(this: Promise&lt;A&gt;, handler: (result: A) =&gt; Promise&lt;B&gt;): Promise&lt;B&gt;</code></pre>
+          </div>
+        </section>
+        <section>
+          <h2>Continuation</h2>
+          <quote><em>Fonction représentant ce qu'il reste à calculer dans un contexte.</em></quote>
+          <div class="fragment">
+            <p>Continuation de <code>secondApiCall(bla)</code> :</p>
+            <pre><code>async function foo(param: string): Promise&lt;number&gt; {
+  const firstResult = await firstApiCall(param);
+  const bla = bar(param, firstResult);
+  const secondResult = await secondApiCall(bla);
+  display(secondResult);
+  return secondResult.length;
+}</code></pre>
+          </div>
+          <pre class="fragment"><code>secondResult => {
+  display(secondResult);
+  return secondResult.length;
+}</code></pre>
+        </section>
+        <section>
+          <h2>Combinaison</h2>
+          <p>
+            Les notations <code>async</code> et <code>*</code> sont du sucre pour séquencer les continuations dans une monade.
+          </p>
+          <pre class="fragment"><code>function* g1() {
+  yield 2;
+  yield 3;
+  yield 4;
+}
+function* g2() {
+  yield 1;
+  yield* g1();
+  yield 5;
+}</code></pre>
+        </section>
+        <section>
+          <h2><code>yield</code></h2>
+          <p>
+            Donne accès à la continuation courante <em>au runtime</em>.
+          </p>
+          <pre class="fragment"><code>function* oneTwoThree(): Generator&lt;number, string, void&gt; {
+  yield 1;
+  yield 2;
+  yield 3;
+  return 'Finished!';
+}</code></pre>
+          <pre class="fragment"><code>const generator = oneTwoThree();
+console.debug(generator); // GeneratorFunctionPrototype {}
+console.debug(generator.next()); // {value: 1, done: false}
+console.debug(generator.next()); // {value: 2, done: false}
+console.debug(generator.next()); // {value: 3, done: false}
+console.debug(generator.next()); // {value: "Finished!", done: true}</code></pre>
+        </section>
+        <section>
+          <h2><code>yield</code></h2>
+          <p>
+            Permet d'implémenter d'autres monades, et donc d'autres effets. En particulier les Promises.
+          </p>
+          <pre class="fragment"><code>...</code></pre>
+          <p>Version testable des promises.</p>
+        </section>
+        <section>
           <h1>Merci.</h1>
           <p style="font-size: 40pt; margin-top: 80px;">
             Blog technique :<br />
