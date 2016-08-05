@@ -33,21 +33,68 @@
         </section>
         <section>
           <h2>Notation <code>async</code></h2>
+          <p>Séquences :</p>
           <pre class="fragment"><code>function foo(param: string): Promise&lt;number&gt; {
-  return firstApiCall(param).then(firstResult =>
+  return firstApiCall(param).then(firstResult => {
     const bla = bar(param, firstResult);
-    return secondApiCall(bla).then(secondResult =>
+    return secondApiCall(bla).then(secondResult => {
       display(secondResult);
       return secondResult.length;
-    );
-  );
+    });
+  });
 }</code></pre>
-        <pre class="fragment"><code>async function foo(param: string): Promise&lt;number&gt; {
+          <pre class="fragment"><code>async function foo(param: string): Promise&lt;number&gt; {
   const firstResult = await firstApiCall(param);
   const bla = bar(param, firstResult);
   const secondResult = await secondApiCall(bla);
   display(secondResult);
   return secondResult.length;
+}</code></pre>
+        </section>
+        <section>
+          <h2>Notation <code>async</code></h2>
+          <p>Concurrence :</p>
+          <pre class="fragment"><code>function foo(params: string[]): Promise&lt;number[]&gt; {
+  return Promise.all(params.map(param => {
+    apiCall(param)
+  }));
+}</code></pre>
+        <pre class="fragment"><code>async function foo(param: string[]): Promise&lt;number[]&gt; {
+  return await Promise.all(params.map(param => {
+    apiCall(param)
+  }));
+}</code></pre>
+        </section>
+        <section>
+          <h2>Notation <code>async</code></h2>
+          <p>Erreurs :</p>
+          <pre class="fragment"><code>function foo(param: string): Promise&lt;number&gt; {
+  return firstApiCall(param).then(
+    success => success.length,
+    error => sentry.log(error)
+  );
+}</code></pre>
+          <pre class="fragment"><code>async function foo(param: string): Promise&lt;number&gt; {
+  try {
+    const success = await firstApiCall(param);
+    return success.length;
+  } catch (error) {
+    sentry.log(error);
+  }
+}</code></pre>
+        </section>
+        <section>
+          <h2>Notation <code>async</code></h2>
+          <p>Erreurs avec <code>ApiPromise</code>:</p>
+          <pre class="fragment"><code>import * as ApiPromise from 'ouicar/api-promise';
+
+apiCall(param: string): Promise&lt;?Result.t&lt;number, string&gt;&gt;</code></pre>
+          <pre class="fragment"><code>async function foo(param: string): Promise&lt;?number&gt; {
+  const result = await apiCall(param);
+  return result && Result.match(
+    success => success,
+    error => error.length
+  );
 }</code></pre>
         </section>
         <section>
