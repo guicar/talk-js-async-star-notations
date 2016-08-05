@@ -98,6 +98,34 @@ apiCall(param: string): Promise&lt;?Result.t&lt;number, string&gt;&gt;</code></p
 }</code></pre>
         </section>
         <section>
+          <h2>Notation <code>*</code></h2>
+          <pre class="fragment"><code>function* oneTwoThree(): Generator&lt;number, string, void&gt; {
+  yield 1;
+  yield 2;
+  yield 3;
+  return 'Finished!';
+}</code></pre>
+          <pre class="fragment"><code>: Generator&lt;Yield, Return, Next&gt;</code></pre>
+          <pre class="fragment"><code>const generator = oneTwoThree();
+console.debug(generator); // GeneratorFunctionPrototype {}
+console.debug(generator.next()); // {value: 1, done: false}
+console.debug(generator.next()); // {value: 2, done: false}
+console.debug(generator.next()); // {value: 3, done: false}
+console.debug(generator.next()); // {value: "Finished!", done: true}</code></pre>
+        </section>
+        <section>
+          <h2>Notation <code>*</code></h2>
+          <pre class="fragment"><code>function* sum(): Generator&lt;string, number, number&gt; {
+  const a = yield '1';
+  const b = yield '2';
+  return a + b;
+}</code></pre>
+          <pre class="fragment"><code>const generator = sum();
+const a = generator.next().value;
+const b = generator.next(Number(a)).value;
+console.debug(generator.next(Number(b))); // {value: 3, done: true}</code></pre>
+        </section>
+        <section>
           <h1>Merci.</h1>
           <p style="font-size: 40pt; margin-top: 80px;">
             Blog technique :<br />
